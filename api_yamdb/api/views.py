@@ -14,8 +14,10 @@ from django.shortcuts import get_object_or_404
 from reviews.models import User, Review
 from api.permissions import AdminOnly, AllPermission
 from api.serializers import (GetTokenSerializer, SignUpSerializer,
-                              UsersSerializer, ReviewSerializer,
-                              CommentSerializer,)
+                            UsersSerializer, ReviewSerializer,
+                            CommentSerializer, CategorySerializer,
+                            GenreSerializer,TitleReadSerializer,
+                            TitleWriteSerializer,)
 
 
 @api_view(['POST'])
@@ -104,3 +106,27 @@ class CommentViewSet(viewsets.ModelViewSet):
         """Создать комментарий к конкретному отзыву если он существует."""
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = [AllPermission,]
+    pagination_class = LimitOffsetPagination
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [AllPermission,]
+    pagination_class = LimitOffsetPagination
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.annotate()
+    permission_classes = [AllPermission,]
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return TitleReadSerializer
+        return TitleWriteSerializer

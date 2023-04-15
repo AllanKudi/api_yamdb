@@ -100,3 +100,63 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
         #exclude = ('review',)
         model = Comment
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор для категорий."""
+
+    slug = serializers.SlugField(
+        max_length=50, min_length=None, allow_blank=False)
+
+    def validate_slug(self, value):
+        if Category.objects.filter(slug=value).exists():
+            raise serializers.ValidationError(
+                'Категория с таким slug уже есть')
+        return value
+
+    class Meta:
+        model = Category
+        fields = ('name', 'slug',)
+        lookup_field = 'slug'
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    """Сериализатор для жанров."""
+    class Meta:
+        model = Genre
+        fields = ('name', 'slug',)
+        lookup_field = 'slug'
+
+
+class TitleReadSerializer(serializers.ModelSerializer):
+    """Сериализатор для просмотра произведений."""
+    category = CategorySerializer(many=False, read_only=True)
+    genre = GenreSerializer(many=True, read_only=True)
+    description = serializers.CharField(required=False)
+    rating = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+        read_only_fields = (
+            'id',
+            'name',
+            'year',
+            'description',
+            'category',
+            'genre')
+
+
+class TitleWriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для изменения произведений."""
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        many=True,
+        queryset=Genre.objects.all(),
+        category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all(),))
+
+    class Meta:
+        model = Title
+        fields = '__all__'
