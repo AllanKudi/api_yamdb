@@ -5,7 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
-from user.models import User, Comment, Review
+from reviews.models import User, Comment, Review
 
 
 class UsersSerializer(serializers.ModelSerializer):

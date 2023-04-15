@@ -1,5 +1,6 @@
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework import filters
 from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,11 +11,11 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
-from user.models import User, Review
-from api.permissions3 import AdminOnly, AllPermission
-from api.serializers3 import (GetTokenSerializer, SignUpSerializer,
+from reviews.models import User, Review
+from api.permissions import AdminOnly, AllPermission
+from api.serializers import (GetTokenSerializer, SignUpSerializer,
                               UsersSerializer, ReviewSerializer,
-                              CommentSerializer)
+                              CommentSerializer,)
 
 
 @api_view(['POST'])

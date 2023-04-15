@@ -1,7 +1,8 @@
-from api.serializers3 import validate_username
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+
+#from api.serializers import SignUpSerializer
 
 
 SCORE_CHOICES = (
@@ -30,7 +31,7 @@ class User(AbstractUser):
     )
 
     username = models.CharField(
-        validators=(validate_username, UnicodeUsernameValidator),
+        #validators=(SignUpSerializer, UnicodeUsernameValidator),
         max_length=150,
         unique=True,
     )
