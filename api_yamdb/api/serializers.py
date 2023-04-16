@@ -5,7 +5,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
-from reviews.models import User, Comment, Review
+from reviews.models import Category, Genre, Title, Comment, Review
+
+from user.models import User
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -153,10 +155,12 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         slug_field='slug',
         many=True,
         queryset=Genre.objects.all(),
-        category = serializers.SlugRelatedField(
+    ),
+    category = serializers.SlugRelatedField(
         slug_field='slug',
-        queryset=Category.objects.all(),))
-
+        queryset=Category.objects.all(),
+    )
+    
     class Meta:
         model = Title
         fields = '__all__'

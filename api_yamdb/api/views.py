@@ -11,7 +11,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
-from reviews.models import User, Review
+from reviews.models import Title, Category, Genre, Review
+from user.models import User
 from api.permissions import AdminOnly, AllPermission
 from api.serializers import (GetTokenSerializer, SignUpSerializer,
                             UsersSerializer, ReviewSerializer,
