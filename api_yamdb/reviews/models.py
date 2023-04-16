@@ -1,9 +1,5 @@
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-
-#from api.serializers import SignUpSerializer
-
+from user.models import User
 
 SCORE_CHOICES = (
          (1, 'Ужасно'),
@@ -19,94 +15,19 @@ SCORE_CHOICES = (
      )
 
 
-class User(AbstractUser):
-    USER = 'user'
-    MODERATOR = 'moderator'
-    ADMIN = 'admin'
-
-    ROLE = (
-        (USER, 'Пользователь'),
-        (MODERATOR, 'Модератор'),
-        (ADMIN, 'Администратор'),
-    )
-
-    username = models.CharField(
-    validators=(UnicodeUsernameValidator,), #SignUpSerializer, ),
-        max_length=150,
-        unique=True,
-    )
-    email = models.EmailField(
-        max_length=254,
-        unique=True,
-    )
-    first_name = models.CharField(
-        'имя',
-        max_length=150,
-        blank=True
-    )
-    bio = models.TextField(
-        'Биография',
-        blank=True,
-    )
-    role = models.CharField(
-        'Роль',
-        max_length=100,
-        choices=ROLE,
-        default=USER,
-        blank=True,
-    )
-
-    class Meta:
-        ordering = ('id',)
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Пользователи'
-
-    def __str__(self):
-        return self.username
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN or self.is_superuser
-
-    @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR or self.is_staff
-
-
-class AbstractNameModel(models.Model):
-    """Абстрактная модель name + slug."""
-
-    slug = models.SlugField(
-        'Slug',
-        max_length=250,
-        unique=True,
-    )
-    name = models.CharField(
-        'Название',
-        max_length=250,
-    )
-
-    class Meta:
-        abstract = True
-        ordering = ('name', )
-
-    def __str__(self):
-        return self.name
-
-
-class Category(AbstractNameModel):
+class Category(models.Model):
     """Модель типа произведения"""
 
-    class Meta(AbstractNameModel.Meta):
+    class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         default_related_name = 'categories'
 
 
-class Genre(AbstractNameModel):
+class Genre(models.Model):
     """Модель жанра произведений."""
 
-    class Meta(AbstractNameModel.Meta):
+    class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         default_related_name = 'genres'
@@ -118,7 +39,8 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         verbose_name='Категория',
-        on_delete=models.PROTECT,
+        null=True,
+        on_delete=models.SET_NULL,
         related_name='titles',
     )
     description = models.TextField(
@@ -148,7 +70,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Review(models.Model):
     """Модель отзывов к произведениям."""
@@ -183,7 +104,7 @@ class Review(models.Model):
     
     def __str__(self):
         return self.text
-
+    
 
 class Comment(models.Model):
     """Модель комментариев к отзывам."""
