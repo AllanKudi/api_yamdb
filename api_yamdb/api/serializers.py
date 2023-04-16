@@ -1,12 +1,9 @@
-from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
-
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-
-from reviews.models import Category, Genre, Title, Comment, Review
-
+from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
+from reviews.models import Category, Genre, Title, Review, Comment
 from user.models import User
 
 
@@ -43,12 +40,12 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
 
-    def validate_username(self, value):
-        if value == 'me':
-            raise serializers.ValidationError(
-                'me нельзя использовать в качестве имени',
-            )
-        return value
+    #def validate_username(self, value):
+        #if value == 'me':
+            #raise serializers.ValidationError(
+                #'me нельзя использовать в качестве имени',
+           #)
+        #return value
        
     class Meta:
         model = User

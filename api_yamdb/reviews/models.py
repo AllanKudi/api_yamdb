@@ -1,7 +1,6 @@
 from django.db import models
 from user.models import User
 
-
 SCORE_CHOICES = (
          (1, 'Ужасно'),
          (2, 'Плохо'),
@@ -16,40 +15,19 @@ SCORE_CHOICES = (
      )
 
 
-class AbstractNameModel(models.Model):
-    """Абстрактная модель name + slug."""
-
-    slug = models.SlugField(
-        'Slug',
-        max_length=250,
-        unique=True,
-    )
-    name = models.CharField(
-        'Название',
-        max_length=250,
-    )
-
-    class Meta:
-        abstract = True
-        ordering = ('name', )
-
-    def __str__(self):
-        return self.name
-
-
-class Category(AbstractNameModel):
+class Category(models.Model):
     """Модель типа произведения"""
 
-    class Meta(AbstractNameModel.Meta):
+    class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         default_related_name = 'categories'
 
 
-class Genre(AbstractNameModel):
+class Genre(models.Model):
     """Модель жанра произведений."""
 
-    class Meta(AbstractNameModel.Meta):
+    class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         default_related_name = 'genres'
@@ -61,7 +39,8 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         verbose_name='Категория',
-        on_delete=models.PROTECT,
+        null=True,
+        on_delete=models.SET_NULL,
         related_name='titles',
     )
     description = models.TextField(
