@@ -11,8 +11,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
-from reviews.models import User, Review
-from api.permissions import AdminOnly, AllPermission
+from reviews.models import User, Review, Category, Genre, Title
+from api.permissions import AdminOnly, AllPermission, IsAdminUserOrReadOnly
 from api.serializers import (GetTokenSerializer, SignUpSerializer,
                             UsersSerializer, ReviewSerializer,
                             CommentSerializer, CategorySerializer,
@@ -76,7 +76,6 @@ class UsersViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели отзывов."""
     serializer_class = ReviewSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = [AllPermission,]
 
 
@@ -94,7 +93,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели комментариев."""
     serializer_class = CommentSerializer
-    pagination_class = LimitOffsetPagination
     permission_classes = [AllPermission,]
 
     def get_queryset(self):
@@ -111,20 +109,18 @@ class CommentViewSet(viewsets.ModelViewSet):
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [AllPermission,]
-    pagination_class = LimitOffsetPagination
+    permission_classes = [IsAdminUserOrReadOnly,]
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllPermission,]
-    pagination_class = LimitOffsetPagination
+    permission_classes = [IsAdminUserOrReadOnly,]
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate()
-    permission_classes = [AllPermission,]
+    permission_classes = [IsAdminUserOrReadOnly,]
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
