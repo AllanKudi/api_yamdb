@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-
 from reviews.validators import validate_username
 
 
@@ -41,6 +40,11 @@ class User(AbstractUser):
         default=USER,
         blank=True,
     )
+    confirmation_code = models.CharField(
+        max_length=20,
+        blank=True,
+    )
+
 
     class Meta:
         ordering = ('id',)
