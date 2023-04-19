@@ -45,7 +45,6 @@ class User(AbstractUser):
         blank=True,
     )
 
-
     class Meta:
         ordering = ('id',)
         verbose_name = 'Пользователь'

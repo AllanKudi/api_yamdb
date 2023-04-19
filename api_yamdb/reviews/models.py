@@ -1,7 +1,6 @@
 from django.db import models
 from user.models import User
 
-from .validators import validate_year
 
 SCORE_CHOICES = (
          (1, 'Ужасно'),
@@ -19,8 +18,9 @@ SCORE_CHOICES = (
 
 class Category(models.Model):
     """Модель типа произведения"""
-    name = models.CharField(max_length=250, default="default name")
-    slug = models.SlugField(unique=True, default="default slug")
+
+    name = models.CharField(max_length=250)
+    slug = models.SlugField(unique=True)
 
     class Meta:
         verbose_name = 'Категория'
@@ -30,8 +30,9 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Модель жанра произведений."""
-    name = models.CharField(max_length=250, default="default name")
-    slug = models.SlugField(unique=True, default="default slug")
+
+    name = models.CharField(max_length=250)
+    slug = models.SlugField(unique=True)
 
     class Meta:
         verbose_name = 'Жанр'
@@ -67,8 +68,7 @@ class Title(models.Model):
     )
     year = models.IntegerField(
         'Год выпуска',
-        db_index=True,
-        validators=[validate_year]
+        db_index=True
     )
 
     class Meta:
@@ -80,6 +80,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     """Модель отзывов к произведениям."""
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
         related_name='reviews',
@@ -115,6 +116,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Модель комментариев к отзывам."""
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
         related_name='comments',
