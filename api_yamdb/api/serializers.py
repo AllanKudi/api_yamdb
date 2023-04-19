@@ -8,6 +8,7 @@ from user.models import User
 
 
 class UsersSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = User
         fields = (
@@ -17,7 +18,8 @@ class UsersSerializer(serializers.ModelSerializer):
 
 class GetTokenSerializer(serializers.ModelSerializer):
     confirmation_code = serializers.CharField(
-        required=True)
+        required=True
+    )
 
     class Meta:
         model = User
@@ -39,17 +41,21 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-
-    #def validate_username(self, value):
-        #if value == 'me':
-            #raise serializers.ValidationError(
-                #'me нельзя использовать в качестве имени',
-           #)
-        #return value
-       
+    
     class Meta:
         model = User
         fields = ('email', 'username')
+
+    def validate(self, data):
+        """Валидация для проверки второго отзыва от одного автора."""
+        username = self.context.get('username')
+        email = self.context.get('email')
+        user = User.objects.get_or_create(username=username, email=email)
+        if (
+            User.objects.filter(username=username, email=email).exists()
+        ):
+            raise ValidationError('Нельзя повторно зарегаться!')
+        return data
 
 
 class ReviewSerializer(serializers.ModelSerializer):

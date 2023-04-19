@@ -1,9 +1,9 @@
-from api.permissions import AdminOnly, AllPermission
+from api.permissions import AdminOnly, AllPermission, IsAdminUserOrReadOnly
 from api.serializers import (CategorySerializer, CommentSerializer,
                              GenreSerializer, GetTokenSerializer,
                              ReviewSerializer, SignUpSerializer,
                              TitleReadSerializer, TitleWriteSerializer,
-                             UsersSerializer)
+                             UsersSerializer,)
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
@@ -22,18 +22,18 @@ from user.models import User
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny, ])
 def sign_up(request):
-    if request.method == 'POST':
-        serializer = SignUpSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user, _ = User.objects.get_or_create(**serializer.validated_data)
-        confirmation_code = default_token_generator.make_token(user)
-        send_mail(
-            subject='Код доступа',
-            message=f'Код доступа {confirmation_code}',
-            from_email='from@example.com',
-            recipient_list=[user.email],
-            fail_silently=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    serializer = SignUpSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user, created = User.objects.get_or_create(**serializer.validated_data)
+    confirmation_code = default_token_generator.make_token(user)
+    send_mail(
+        subject='Код доступа',
+        message=f'Код доступа {confirmation_code}',
+        from_email='from@example.com',
+        recipient_list=[user.email],
+        fail_silently=False)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 @api_view(['POST'])
@@ -50,15 +50,15 @@ class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
     permission_classes = (IsAuthenticated, AdminOnly, )
-    lookup_field = 'username'
-    filter_backends = (SearchFilter, )
+    filter_backends = (filters.SearchFilter, )
     search_fields = ('=username', )
 
     @action(
         methods=['GET', 'PATCH'],
         detail=False,
         permission_classes=(IsAuthenticated,),
-        url_path='me')
+        url_path='me',
+        serializer_class=UsersSerializer)
     def get_me(self, request):
         serializer = self.get_serializer(request.user)
         if request.method == 'PATCH':
@@ -68,7 +68,7 @@ class UsersViewSet(viewsets.ModelViewSet):
                 partial=True,
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save(role=request.user.role, partial=True)
+            serializer.save(role=request.user.role)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -77,7 +77,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = LimitOffsetPagination
     permission_classes = [AllPermission,]
-
 
     def get_queryset(self):
         """Получить все отзывы к конкретному произведению если оно существует."""
@@ -110,15 +109,21 @@ class CommentViewSet(viewsets.ModelViewSet):
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [AllPermission,]
+    permission_classes = [IsAdminUserOrReadOnly,]
     pagination_class = LimitOffsetPagination
+    lookup_field = 'name'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('=name', )
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllPermission,]
+    permission_classes = [IsAdminUserOrReadOnly,]
     pagination_class = LimitOffsetPagination
+    lookup_field = 'name'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('=name', )
 
 
 class TitleViewSet(viewsets.ModelViewSet):

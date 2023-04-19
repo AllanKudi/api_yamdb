@@ -17,6 +17,8 @@ SCORE_CHOICES = (
 
 class Category(models.Model):
     """Модель типа произведения"""
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(unique=True)
 
     class Meta:
         verbose_name = 'Категория'
@@ -26,6 +28,8 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Модель жанра произведений."""
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(unique=True)
 
     class Meta:
         verbose_name = 'Жанр'
@@ -70,6 +74,7 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Review(models.Model):
     """Модель отзывов к произведениям."""
