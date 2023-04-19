@@ -1,6 +1,8 @@
 from django.db import models
 from user.models import User
 
+from .validators import validate_year
+
 SCORE_CHOICES = (
          (1, 'Ужасно'),
          (2, 'Плохо'),
@@ -17,6 +19,8 @@ SCORE_CHOICES = (
 
 class Category(models.Model):
     """Модель типа произведения"""
+    name = models.CharField(max_length=250, default="default name")
+    slug = models.SlugField(unique=True, default="default slug")
 
     class Meta:
         verbose_name = 'Категория'
@@ -26,6 +30,8 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Модель жанра произведений."""
+    name = models.CharField(max_length=250, default="default name")
+    slug = models.SlugField(unique=True, default="default slug")
 
     class Meta:
         verbose_name = 'Жанр'
@@ -62,6 +68,7 @@ class Title(models.Model):
     year = models.IntegerField(
         'Год выпуска',
         db_index=True,
+        validators=[validate_year]
     )
 
     class Meta:
