@@ -57,7 +57,7 @@ class CategorySerializer(serializers.ModelSerializer):
         """Проверка соответствия слага категории."""
         if not re.fullmatch(r'^[-a-zA-Z0-9_]+$', value):
             raise serializers.ValidationError(
-                'Псевдоним категории не соотвествует формату',
+                'Слаг категории не соотвествует формату',
             )
         return value
 
@@ -74,7 +74,7 @@ class GenreSerializer(serializers.ModelSerializer):
         """Проверка соответствия слага жанра."""
         if not re.fullmatch(r'^[-a-zA-Z0-9_]+$', value):
             raise serializers.ValidationError(
-                'Псевдоним жанра не соотвествует формату',
+                'Слаг жанра не соотвествует формату',
             )
         return value
 
@@ -89,15 +89,6 @@ class TitleSerializer(serializers.ModelSerializer):
 
     rating = serializers.IntegerField(read_only=True)
 
-    def validate_year(self, value):
-        """Проверка года на будущее время."""
-        current_year = timezone.now().year
-        if value > current_year:
-            raise serializers.ValidationError(
-                'Марти, ты опять взял Делориан без спроса?!',
-            )
-        return value
-
     class Meta:
         model = Title
         fields = (
@@ -109,6 +100,15 @@ class TitleSerializer(serializers.ModelSerializer):
             'category',
             'rating',
         )
+
+    def validate_year(self, value):
+        """Проверка года на будущее время."""
+        current_year = timezone.now().year
+        if value > current_year:
+            raise serializers.ValidationError(
+                'Год не может быть больше текущего!',
+            )
+        return value
 
 
 class TitleReadSerializer(TitleSerializer):
@@ -162,7 +162,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         title_id = self.context.get('view').kwargs.get('title_id')
         if Review.objects.filter(author=author, title=title_id).exists():
             raise serializers.ValidationError(
-                'Вы уже оставляли отзыв на это произведение',
+                'Вы уже оставляли отзыв на это произведение!',
             )
         return data
 

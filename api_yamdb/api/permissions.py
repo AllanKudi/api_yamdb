@@ -33,7 +33,5 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     message = 'Данный запрос недоступен для вас.'
 
     def has_permission(self, request, view):
-        """Проверка на запросы к объекту
-        Для безопасных методов всегда True."""
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_admin)

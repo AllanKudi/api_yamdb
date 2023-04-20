@@ -1,19 +1,18 @@
 from django.db import models
 from user.models import User
 
-
 SCORE_CHOICES = (
-         (1, 'Ужасно'),
-         (2, 'Плохо'),
-         (3, 'Удовлетворительно'),
-         (4, 'Сносно'),
-         (5, 'Средне'),
-         (6, 'Хорошо'),
-         (7, 'Отлично'),
-         (8, 'Прекрасно'),
-         (9, 'Супер'),
-         (10, 'Превосходно'),
-     )
+    (1, 'Ужасно'),
+    (2, 'Плохо'),
+    (3, 'Удовлетворительно'),
+    (4, 'Сносно'),
+    (5, 'Средне'),
+    (6, 'Хорошо'),
+    (7, 'Отлично'),
+    (8, 'Прекрасно'),
+    (9, 'Супер'),
+    (10, 'Превосходно'),
+)
 
 
 class Category(models.Model):
@@ -73,10 +72,11 @@ class Title(models.Model):
 
     class Meta:
         verbose_name = 'Произведение'
-        verbose_name_plural = 'Произведения'  
+        verbose_name_plural = 'Произведения'
 
     def __str__(self):
         return self.name
+
 
 class Review(models.Model):
     """Модель отзывов к произведениям."""
@@ -87,7 +87,7 @@ class Review(models.Model):
         verbose_name='Автор отзыва',
     )
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, 
+        Title, on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Произведение, к которому пойдет отзыв',
     )
@@ -97,7 +97,7 @@ class Review(models.Model):
     )
     score = models.IntegerField(choices=SCORE_CHOICES)
     pub_date = models.DateTimeField(
-        verbose_name='Дата добавления отзыва', 
+        verbose_name='Дата добавления отзыва',
         auto_now_add=True, db_index=True,
     )
 
@@ -109,10 +109,10 @@ class Review(models.Model):
                 fields=['title', 'author'],
                 name='unique_title_author'
             )]
-    
+
     def __str__(self):
         return self.text
-    
+
 
 class Comment(models.Model):
     """Модель комментариев к отзывам."""
@@ -139,6 +139,6 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
-    
+
     def __str__(self):
         return self.text
