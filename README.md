@@ -108,7 +108,6 @@ python manage.py migrate
 ```
 python manage.py runserver
 ```
-```
 
 ### Импорт данных из csv для наполнения базы:
 
