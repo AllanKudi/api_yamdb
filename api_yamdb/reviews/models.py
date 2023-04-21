@@ -14,6 +14,8 @@ SCORE_CHOICES = (
     (10, 'Превосходно'),
 )
 
+REDUCTION = 15
+
 
 class Category(models.Model):
     """Модель типа произведения"""
@@ -26,6 +28,9 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
         default_related_name = 'categories'
 
+    def __str__(self):
+        return f'{str(self.name)[:REDUCTION]}'
+
 
 class Genre(models.Model):
     """Модель жанра произведений."""
@@ -37,6 +42,9 @@ class Genre(models.Model):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         default_related_name = 'genres'
+    
+    def __str__(self):
+        return f'{str(self.name)[:REDUCTION]}'
 
 
 class Title(models.Model):
@@ -75,20 +83,7 @@ class Title(models.Model):
         verbose_name_plural = 'Произведения'
 
     def __str__(self):
-        return self.name
-
-
-class GenreTitle(models.Model):
-    """Модель жанры-произведения."""
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True)
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.genre}{self.title}'
+        return f'{str(self.name)[:REDUCTION]}'
 
 
 class Review(models.Model):
@@ -124,7 +119,7 @@ class Review(models.Model):
             )]
 
     def __str__(self):
-        return self.text
+        return f'{str(self.text)[:REDUCTION]}'
 
 
 class Comment(models.Model):
@@ -154,4 +149,4 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return self.text
+        return f'{str(self.text)[:REDUCTION]}'

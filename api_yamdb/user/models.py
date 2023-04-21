@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
-from reviews.validators import validate_username
+from .validators import validate_username
 
 
 class User(AbstractUser):
@@ -16,16 +16,18 @@ class User(AbstractUser):
     )
 
     username = models.CharField(
+        'Никнейм',
         validators=(validate_username, UnicodeUsernameValidator),
         max_length=150,
         unique=True,
     )
     email = models.EmailField(
+        'Е-майл',
         max_length=254,
         unique=True,
     )
     first_name = models.CharField(
-        'имя',
+        'Имя',
         max_length=150,
         blank=True
     )
@@ -41,6 +43,7 @@ class User(AbstractUser):
         blank=True,
     )
     confirmation_code = models.CharField(
+        'Код',
         max_length=20,
         blank=True,
     )

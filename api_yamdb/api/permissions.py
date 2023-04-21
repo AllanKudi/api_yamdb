@@ -1,12 +1,8 @@
 from rest_framework import permissions
 
-message = 'Данный запрос недоступен для вас.'
-
 
 class IsAdminUser(permissions.BasePermission):
     """Доступ только для пользователей с ролью администратора."""
-
-    print(message)
 
     def has_permission(self, request, view):
         return request.user.is_admin
@@ -14,8 +10,6 @@ class IsAdminUser(permissions.BasePermission):
 
 class IsAuthorOrModerAdminOrReadOnly(permissions.BasePermission):
     """Даёт доступ неадмину/немодеру/неавтору только к GET/OPTIONS/HEAD."""
-
-    print(message)
 
     def has_object_permission(self, request, view, obj):
         return (
@@ -31,8 +25,6 @@ class IsAuthorOrModerAdminOrReadOnly(permissions.BasePermission):
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     """Даёт доступ неадмину только к GET/OPTIONS/HEAD."""
-
-    print(message)
 
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS

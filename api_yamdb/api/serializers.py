@@ -50,25 +50,8 @@ class SignupSerializer(serializers.ModelSerializer):
         model = User
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор модели Category."""
-
-    def validate_slug(self, value):
-        """Проверка соответствия слага категории."""
-        if not re.fullmatch(r'^[-a-zA-Z0-9_]+$', value):
-            raise serializers.ValidationError(
-                'Слаг категории не соотвествует формату',
-            )
-        return value
-
-    class Meta:
-        fields = ('name', 'slug')
-        model = Category
-        lookup_field = 'slug'
-
-
-class GenreSerializer(serializers.ModelSerializer):
-    """Сериализатор модели Genre."""
+class BaseSlugSerializer(serializers.ModelSerializer):
+    """Базовый селиазитор для модели со слагом."""
 
     def validate_slug(self, value):
         """Проверка соответствия слага жанра."""
@@ -80,8 +63,23 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('name', 'slug')
-        model = Genre
         lookup_field = 'slug'
+
+
+class CategorySerializer(BaseSlugSerializer):
+    """Сериализатор модели Category."""
+
+    class Meta:
+        model = Category
+        exclude = ('id',)
+
+
+class GenreSerializer(BaseSlugSerializer):
+    """Сериализатор модели Genre."""
+    
+    class Meta:
+        model = Genre
+        exclude = ('id',)
 
 
 class TitleSerializer(serializers.ModelSerializer):
