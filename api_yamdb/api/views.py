@@ -11,6 +11,7 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
@@ -33,24 +34,29 @@ class UserViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminUser)
 
 
-class UsersMeView(APIView):
-    """Вью-класс для эндпоинта users/me/."""
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path='me')
+    def get_current_user_info(self, request):
+        serializer = UserSerializer(request.user)
+        if request.method == 'PATCH':
+            if request.user.is_admin:
+                serializer = UserSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            else:
+                serializer = UsersMeSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        """Метод GET."""
-        me = get_object_or_404(User, username=request.user.username)
-        serializer = UserSerializer(me)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def patch(self, request):
-        """Метод PATCH."""
-        me = get_object_or_404(User, username=request.user.username)
-        serializer = UsersMeSerializer(me, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class YamdbTokenObtainPairView(TokenObtainPairView):
@@ -141,15 +147,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Создание нового ревью."""
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        serializer.save(author=self.request.user, title=title)
+        title = get_object_or_404(
+            Title, id=self.kwargs.get('title_id')
+        ) 
+        serializer.save(author=self.request.user, title=title) 
 
     def get_queryset(self):
         """Получение кверисета."""
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        return title.reviews.all()
+        title = get_object_or_404(
+            Title, id=self.kwargs.get('title_id')
+        ) 
+        return title.reviews.all() 
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -163,16 +171,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Создание нового коммента."""
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=review_id, title=title)
-        serializer.save(author=self.request.user, review=review)
+        review = get_object_or_404(
+            Review, id=self.kwargs.get('review_id'),
+        ) 
+        serializer.save(author=self.request.user, review=review) 
 
     def get_queryset(self):
         """Получение кверисета."""
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, id=title_id)
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, id=review_id, title=title)
-        return Comment.objects.filter(review=review)
+        review = get_object_or_404(
+            Review, id=self.kwargs.get('review_id'),
+        )
+        return Comment.objects.filter(review=review) 
