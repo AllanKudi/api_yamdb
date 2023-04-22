@@ -1,6 +1,6 @@
 from api.views import (CategoryViewSet, CommentViewSet, GenreViewSet,
-                       ReviewViewSet, SignupView, TitleViewSet, UsersMeView,
-                       UserViewSet, YamdbTokenObtainPairView)
+                       ReviewViewSet, SignupView, TitleViewSet, UserViewSet,
+                       YamdbTokenObtainPairView)
 from django.urls import include, path
 from rest_framework import routers
 
@@ -41,7 +41,6 @@ urlpatterns = [
 
     path('v1/auth/token/', YamdbTokenObtainPairView.as_view(),
          name='create_token'),
-    path('v1/auth/signup/', SignupView.as_view(), name='signup'),
-    path('v1/users/me/', UsersMeView.as_view(), name='me'),
     path('v1/', include(router.urls)),
+    path('v1/auth/signup/', SignupView.as_view(), name='signup'),
 ]

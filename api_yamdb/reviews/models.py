@@ -42,7 +42,7 @@ class Genre(models.Model):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         default_related_name = 'genres'
-    
+
     def __str__(self):
         return f'{str(self.name)[:REDUCTION]}'
 
@@ -55,7 +55,6 @@ class Title(models.Model):
         verbose_name='Категория',
         null=True,
         on_delete=models.SET_NULL,
-        related_name='titles',
     )
     description = models.TextField(
         'Описание',
@@ -66,7 +65,6 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         verbose_name='Жанр',
-        related_name='titles',
     )
     name = models.CharField(
         'Название',
@@ -81,6 +79,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+        default_related_name = 'titles'
 
     def __str__(self):
         return f'{str(self.name)[:REDUCTION]}'
@@ -91,12 +90,10 @@ class Review(models.Model):
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Автор отзыва',
     )
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Произведение, к которому пойдет отзыв',
     )
     text = models.TextField(
@@ -112,6 +109,7 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        default_related_name = 'reviews'
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
@@ -127,12 +125,10 @@ class Comment(models.Model):
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Автор комментария',
     )
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Отзыв, к которому пойдет комментарий',
     )
     text = models.TextField(
@@ -147,6 +143,7 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+        default_related_name = 'comments'
 
     def __str__(self):
         return f'{str(self.text)[:REDUCTION]}'

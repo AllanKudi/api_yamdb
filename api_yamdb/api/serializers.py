@@ -76,7 +76,7 @@ class CategorySerializer(BaseSlugSerializer):
 
 class GenreSerializer(BaseSlugSerializer):
     """Сериализатор модели Genre."""
-    
+
     class Meta:
         model = Genre
         exclude = ('id',)
